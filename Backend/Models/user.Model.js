@@ -18,21 +18,37 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  posts: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Post",
-    },
-  ],
-
+  role: {
+    type: String,
+    default: "User",
+    required: true,
+  },
+  address: {
+    type: String,
+    required: true,
+  },
   profilePicture: {
     type: String,
     default: "default-profile.png",
   },
-
+  orders: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Order",
+    },
+  ],
+  Reviews: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Review",
+    },
+  ],
   bio: {
     type: String,
     trim: true,
+  },
+  created_at: {
+    type: Date,
   },
 });
 
@@ -58,17 +74,13 @@ export const validateUser = (data) => {
       "any.required": "Email is required",
     }),
 
-    password: Joi.string()
-      .min(8)
-      .max(128)
-      .required()
-      .messages({
-        "string.min": "Password must be at least 8 characters",
-        "string.max": "Password must be at most 128 characters",
-        "string.pattern":
-          "Password must contain at least one lowercase letter, uppercase letter, number and special character",
-        "any.required": "Password is required",
-      }),
+    password: Joi.string().min(8).max(128).required().messages({
+      "string.min": "Password must be at least 8 characters",
+      "string.max": "Password must be at most 128 characters",
+      "string.pattern":
+        "Password must contain at least one lowercase letter, uppercase letter, number and special character",
+      "any.required": "Password is required",
+    }),
 
     bio: Joi.string().allow("").max(500).messages({
       "string.max": "Bio must be at most 500 characters",
@@ -76,6 +88,15 @@ export const validateUser = (data) => {
 
     profilePicture: Joi.string().uri().allow("").messages({
       "string.uri": "Profile picture must be a valid URI",
+    }),
+    role: Joi.string().allow("").messages({
+      "string.uri": "Role should be either User or Merchent",
+    }),
+    address: Joi.string().allow("").messages({
+      "string.uri": "Address is required",
+    }),
+    created_at: Joi.string().allow("").messages({
+      "string.uri": "Creation date is required",
     }),
   });
 

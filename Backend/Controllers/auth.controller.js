@@ -16,9 +16,18 @@ export const register = async (req, res) => {
     });
   }
 
-  const { name, email, password, bio, profilePicture } = req.body;
+  const {
+    name,
+    email,
+    password,
+    bio,
+    profilePicture,
+    address,
+    role,
+    created_at,
+  } = req.body;
 
-  if (!name || !email | !password) {
+  if (!name || !email | !password || !role || !address || !created_at) {
     return res.json({
       success: false,
       message: "Fill all the credentials please!",
@@ -46,6 +55,9 @@ export const register = async (req, res) => {
       password: hashpassword,
       profilePicture: imageUpload.secure_url,
       bio: bio,
+      role: role,
+      created_at: created_at,
+      address: address,
     });
 
     await user.save();
