@@ -1,4 +1,4 @@
-import userModel from "../Models/user.Model.js";
+import userModel, { validateUpdation } from "../Models/user.Model.js";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import transporter from "../Config/nodemailer.config.js";
@@ -76,7 +76,7 @@ export const register = async (req, res) => {
       from: process.env.SENDER_EMAIL,
       to: user.email,
       subject: "Account is registered",
-      text: `Welcome to the Hermies platform a dedicated platform for pet lovers and anyone who is seeking a supportive pet.`,
+      text: `Welcome to the E-commerce website.`,
     };
 
     await transporter.sendMail(mailOptions);
@@ -145,7 +145,7 @@ export const profile = async (req, res) => {
   const { id } = req.body;
 
   try {
-    let userProfile = await userModel.findById(id);
+    let userProfile = await userModel.findById(id).populate("");
 
     if (!userProfile) {
       return res.json({ success: false, message: "something went wrong" });
@@ -166,6 +166,85 @@ export const logout = async (req, res) => {
     });
 
     return res.json({ success: true, message: "Logout" });
+  } catch (error) {
+    return res.json({ success: false, message: error.message });
+  }
+};
+
+export const update = async (req, res) => {
+  const { error } = validateUpdation(req.body);
+
+  if (error) {
+    return res.status(400).json({
+      success: false,
+      message: error,
+    });
+  }
+
+  const {
+    name,
+    email,
+    password,
+    bio,
+    profilePicture,
+    address,
+    role,
+    created_at,
+  } = req.body;
+
+  if (!name || !email | !password || !role || !address || !created_at) {
+    return res.json({
+      success: false,
+      message: "Fill all the credentials please!",
+    });
+  }
+  try {
+    let existuser = await userModel.findOne({ email });
+    if (!existuser) {
+      return res.json({
+        success: false,
+        message: "user do not exists",
+      });
+    }
+
+    let salt = await bcrypt.genSalt(10);
+    let hashpassword = await bcrypt.hash(password, salt);
+
+    const imageUpload = await cloudinary.uploader.upload(profilePicture, {
+      resource_type: "image",
+    });
+
+    existuser.name = name;
+    existuser.email = email;
+    existuser.password = hashpassword;
+    existuser.profilePicture = imageUpload.secure_url;
+    existuser.bio = bio;
+    existuser.role = role;
+    existuser.created_at = created_at;
+    existuser.address = address;
+
+    await existuser.save();
+
+    const token = jwt.sign({ id: existuser._id }, process.env.JWT_SECRET, {
+      expiresIn: "1d",
+    });
+
+    res.cookie("token", token, {
+      httpOnly: true,
+      maxAge: 1 * 24 * 60 * 60 * 1000, // 1 day
+      sameSite: "none", // Required for cross-origin cookies
+    });
+
+    const mailOptions = {
+      from: process.env.SENDER_EMAIL,
+      to: existuser.email,
+      subject: "Profile info is updated",
+      text: `The profile info is updated.`,
+    };
+
+    await transporter.sendMail(mailOptions);
+
+    return res.json({ success: true, message: "User updated successfully." });
   } catch (error) {
     return res.json({ success: false, message: error.message });
   }

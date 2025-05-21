@@ -4,7 +4,8 @@ dotenv.config();
 import cookieParser from "cookie-parser";
 import DbConnect from "./Config/mongodb.js";
 import cors from "cors";
-import authRouter from "./Routes/auth.Routes.js";
+import authRoutes from "./Routes/auth.Routes.js";
+import productRoutes from "./Routes/product.Routes.js";
 import cloudConfig from "./Config/cloudinary.js";
 
 const port = process.env.PORT || 3000;
@@ -24,7 +25,8 @@ app.use(
 );
 app.use(cookieParser());
 
-app.use("/api/auth", authRouter);
+app.use("/api/auth", authRoutes);
+app.use("/api/product", productRoutes);
 
 app.listen(port, () => {
   console.log(`Server is running on ${port}`);
