@@ -88,3 +88,93 @@ export const create = async (req, res) => {
     return res.json({ success: false, message: error.message });
   }
 };
+
+export const getAll = async (req, res) => {
+  try {
+    let allProducts = await ProductModel.find();
+
+    if (!allProducts) {
+      return res.json({ success: false, message: "An error occurred." });
+    }
+
+    return res.json({ success: true, message: allProducts });
+  } catch (error) {
+    return res.json({ success: false, message: error.message });
+  }
+};
+
+export const findproduct = async (req, res) => {
+  const { id } = req.body;
+
+  if (!id) {
+    return res.json({
+      success: false,
+      message: "id of the product is required.",
+    });
+  }
+
+  try {
+    let product = await ProductModel.findById(id);
+    if (!product) {
+      return res.json({ success: false, message: "Product not found." });
+    }
+    return res.json({ success: true, product });
+  } catch (error) {
+    return res.json({ success: false, message: error.message });
+  }
+};
+
+export const remove = async (req, res) => {
+  const { id } = req.params;
+
+  if (!id) {
+    return res.json({
+      success: false,
+      message: "id of the product is required.",
+    });
+  }
+
+  try {
+    let user = await User.findById(req.creator);
+
+    if (!user) {
+      return res.json({ success: false, message: "User not found." });
+    }
+    let product = await ProductModel.findById(id);
+
+    if (!product) {
+      return res.json({ success: false, message: "Product not found." });
+    }
+
+    if (product.creator != req.creator) {
+      return res.json({
+        success: false,
+        message: "Only the authorized admin can delte the products.",
+      });
+    }
+
+    await ProductModel.findByIdAndDelete(id);
+
+    const mailOptions = {
+      from: process.env.SENDER_EMAIL,
+      to: user.email,
+      subject: "Product is Deleted.",
+      text: `Product is removed from website.`,
+    };
+
+    await transporter.sendMail(mailOptions);
+
+    await User.findByIdAndUpdate(
+      user._id, // Author's ID
+      { $pull: { Products: product._id } }, // Add the post ID to the posts array
+      { new: true } // Return the updated document
+    );
+
+    return res.json({
+      success: true,
+      message: "Product removed from the website.",
+    });
+  } catch (error) {
+    return res.json({ success: false, message: error.message });
+  }
+};
