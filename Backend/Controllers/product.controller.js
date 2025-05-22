@@ -178,3 +178,67 @@ export const remove = async (req, res) => {
     return res.json({ success: false, message: error.message });
   }
 };
+
+export const update = async (req, res) => {
+  const { id } = req.params;
+  if (!id || !req.creator) {
+    return res.json({
+      success: false,
+      message: "id of the product and creator is required.",
+    });
+  }
+
+  const { name, description, price, Stock, category, image, created_at } =
+    req.body;
+  if (
+    !name ||
+    !description ||
+    !price ||
+    !Stock ||
+    !category ||
+    !image ||
+    !created_at
+  ) {
+    return res.json({
+      success: false,
+      message: "Fill all the credentials including id.",
+    });
+  }
+
+  try {
+    let user = await User.findById(req.creator);
+
+    if (!user) {
+      return res.json({ success: false, message: "User not found." });
+    }
+    let product = await ProductModel.findById(id);
+
+    if (!product) {
+      return res.json({ success: false, message: "Product not found." });
+    }
+
+    if (product.creator != req.creator) {
+      return res.json({
+        success: false,
+        message: "Only the authorized admin can delte the products.",
+      });
+    }
+
+    const imageUpload = await cloudinary.uploader.upload(image, {
+      resource_type: "image",
+    });
+
+    (product.name = name),
+      (product.description = description),
+      (product.price = price),
+      (product.image = imageUpload.secure_url),
+      (product.Stock = Stock),
+      (product.category = category),
+      (product.created_at = created_at),
+      (product.creator = req.creator);
+
+    return res.json({ success: true, product, message: "Product is updated." });
+  } catch (error) {
+    return res.json({ success: false, message: error.message });
+  }
+};
