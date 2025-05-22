@@ -49,6 +49,12 @@ const userSchema = new mongoose.Schema({
       ref: "Product",
     },
   ],
+   CartOrder: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Cart",
+    },
+  ],
   bio: {
     type: String,
     trim: true,

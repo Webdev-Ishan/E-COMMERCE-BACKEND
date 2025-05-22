@@ -33,7 +33,13 @@ export const create = async (req, res) => {
   }
   try {
     let creator = await User.findById(id);
-    if (!creator || !creator.role == "Merchant") {
+    if (!creator) {
+      return res.json({
+        success: false,
+        message: "User not found.",
+      });
+    }
+    if (creator.role !== "Merchant") {
       return res.json({
         success: false,
         message: "Only Merchants can create a product.",
