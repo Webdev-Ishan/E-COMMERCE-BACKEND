@@ -8,6 +8,7 @@ import authRoutes from "./Routes/auth.Routes.js";
 import productRoutes from "./Routes/product.Routes.js";
 import cartRoutes from "./Routes/cart.Routes.js";
 import orderRoutes from "./Routes/order.Routes.js";
+import reviewRoutes from "./Routes/review.Routes.js";
 import cloudConfig from "./Config/cloudinary.js";
 
 const port = process.env.PORT || 3000;
@@ -31,7 +32,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/product", productRoutes);
 app.use("/api/cart", cartRoutes);
 app.use("/api/order", orderRoutes);
-
+app.use("/api/review",reviewRoutes)
 app.listen(port, () => {
   console.log(`Server is running on ${port}`);
 });
