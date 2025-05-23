@@ -1,4 +1,3 @@
-import { required } from "joi";
 import mongoose from "mongoose";
 
 const orderSchema = new mongoose.Schema({
@@ -6,12 +5,12 @@ const orderSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
   },
-  products: [
+  product: 
     {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Products",
     },
-  ],
+  
   totalAmount: {
     type: Number,
     required: true,
