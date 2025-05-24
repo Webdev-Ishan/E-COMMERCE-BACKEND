@@ -1,4 +1,4 @@
-import User from "../Models/user.Model.js";
+import Merchant from '../Models/Merchant.model.js'
 import ProductModel from "../Models/product.model.js";
 import { validateProduct } from "../Models/product.model.js";
 import transporter from "../Config/nodemailer.config.js";
@@ -32,7 +32,7 @@ export const create = async (req, res) => {
     });
   }
   try {
-    let creator = await User.findById(id);
+    let creator = await Merchant.findById(id);
     if (!creator) {
       return res.json({
         success: false,
@@ -71,7 +71,7 @@ export const create = async (req, res) => {
 
     await product.save();
 
-    await User.findByIdAndUpdate(
+    await Merchant.findByIdAndUpdate(
       id, // Author's ID
       { $push: { Products: product._id } }, // Add the post ID to the posts array
       { new: true } // Return the updated document
@@ -141,7 +141,7 @@ export const remove = async (req, res) => {
   }
 
   try {
-    let user = await User.findById(req.creator);
+    let user = await Merchant.findById(req.creator);
 
     if (!user) {
       return res.json({ success: false, message: "User not found." });
@@ -170,7 +170,7 @@ export const remove = async (req, res) => {
 
     await transporter.sendMail(mailOptions);
 
-    await User.findByIdAndUpdate(
+    await Merchant.findByIdAndUpdate(
       user._id, // Author's ID
       { $pull: { Products: product._id } }, // Add the post ID to the posts array
       { new: true } // Return the updated document
@@ -212,7 +212,7 @@ export const update = async (req, res) => {
   }
 
   try {
-    let user = await User.findById(req.creator);
+    let user = await Merchant.findById(req.creator);
 
     if (!user) {
       return res.json({ success: false, message: "User not found." });
@@ -242,6 +242,8 @@ export const update = async (req, res) => {
       (product.category = category),
       (product.created_at = created_at),
       (product.creator = req.creator);
+
+      await product.save();
 
     return res.json({ success: true, product, message: "Product is updated." });
   } catch (error) {
