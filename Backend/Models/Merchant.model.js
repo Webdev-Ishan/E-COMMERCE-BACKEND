@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import Joi from "joi";
 
-const userSchema = new mongoose.Schema({
+const merchantSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
@@ -18,6 +18,11 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  role: {
+    type: String,
+    default: "Merchant",
+
+  },
   address: {
     type: String,
     required: true,
@@ -26,28 +31,12 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: "default-profile.png",
   },
-  orders: [
+  Products: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Order",
+      ref: "Product",
     },
   ],
-  Reviews: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Review",
-    },
-  ],
-  CartOrder: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Cart",
-    },
-  ],
-  role: {
-    type: String,
-    default: "User",
-  },
   bio: {
     type: String,
     trim: true,
@@ -57,10 +46,10 @@ const userSchema = new mongoose.Schema({
   },
 });
 
-const User = mongoose.model("User", userSchema);
+const User = mongoose.model("Merchant", merchantSchema);
 
 // Export both model and validation function
-export const validateUser = (data) => {
+export const validateMerchant = (data) => {
   const schema = Joi.object({
     name: Joi.string()
       .min(2)
@@ -94,7 +83,6 @@ export const validateUser = (data) => {
     profilePicture: Joi.string().uri().allow("").messages({
       "string.uri": "Profile picture must be a valid URI",
     }),
-
     address: Joi.string().allow("").messages({
       "string.uri": "Address is required",
     }),
@@ -106,7 +94,7 @@ export const validateUser = (data) => {
   return schema.validate(data);
 };
 
-export const loginUser = (data) => {
+export const loginMerchant = (data) => {
   const schema = Joi.object({
     email: Joi.string().email().required().messages({
       "string.email": "Please enter a valid email address",
@@ -160,7 +148,6 @@ export const validateUpdation = (data) => {
     profilePicture: Joi.string().uri().allow("").messages({
       "string.uri": "Profile picture must be a valid URI",
     }),
-
     address: Joi.string().allow("").messages({
       "string.uri": "Address is required",
     }),

@@ -9,5 +9,10 @@ authRouter.post("/login", authController.login);
 authRouter.get("/profile", authUser, authController.profile);
 authRouter.put("/update",authUser,authController.update)
 authRouter.post("/logout", authController.logout);
+authRouter.post("/registerMerchant", multer.single("profilePicture"),authController.registerMerchant);
+authRouter.post("/loginMerchant", authController.loginMerch);
+authRouter.get("/profileMerchant", authUser, authController.profileMerchant);
+authRouter.put("/updateMerchant",authUser,authController.updateMerchant);
+authRouter.post("/logoutMerchant", authController.logoutMerchant);
 
 export default authRouter;
