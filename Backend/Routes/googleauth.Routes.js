@@ -2,7 +2,10 @@ import express from "express";
 const googleauthRouter = express.Router();
 import passport from "passport";
 
-googleauthRouter.get("/", passport.authenticate("google", { scope: ["profile"] }));
+googleauthRouter.get(
+  "/",
+  passport.authenticate("google", { scope: ["profile", "email"], prompt: "select_account" })
+);
 googleauthRouter.get(
   "/callback",
   passport.authenticate("google", { failureRedirect: "/" }),
