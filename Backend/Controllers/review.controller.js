@@ -30,12 +30,22 @@ export const makereview = async (req, res) => {
       });
     }
 
-    let product = await ProductModel.findById(id);
+    let product = await ProductModel.findById(id).populate(
+      "creator",
+      "  email"
+    );
 
     if (!product) {
       return res.json({
         success: false,
         message: "Product is not present.",
+      });
+    }
+
+    if (!product.creator || !product.creator.email) {
+      return res.json({
+        success: false,
+        message: "Product creator not found or has no email.",
       });
     }
 
@@ -64,11 +74,19 @@ export const makereview = async (req, res) => {
     const mailOptions = {
       from: process.env.SENDER_EMAIL,
       to: user.email,
-      subject: "Product is Deleted.",
-      text: `Product is removed from website.`,
+      subject: "Review is submited.",
+      text: `Thanks for reviewing.`,
+    };
+
+    const mailOptions2 = {
+      from: process.env.SENDER_EMAIL,
+      to: product.creator.email,
+      subject: "Someone give a review to your product",
+      text: `Review info: Rating -> ${review.rating} and Comment-> ${review.comment} `,
     };
 
     await transporter.sendMail(mailOptions);
+    await transporter.sendMail(mailOptions2);
     return res.json({ success: true, review });
   } catch (error) {
     return res.json({ success: false, message: error.message });
@@ -128,7 +146,6 @@ export const remove = async (req, res) => {
   }
 
   try {
-
     let user = await User.findById(req.creator);
 
     if (!user) {
@@ -147,21 +164,28 @@ export const remove = async (req, res) => {
       });
     }
 
+    if (review.user != req.creator) {
+      return res.json({
+        success: false,
+        message: "You can delete only your own reviews.",
+      });
+    }
+
     let removed = await Reviewmodel.findByIdAndDelete(id);
 
     await User.findByIdAndUpdate(
-        user._id,
-        {$pull:{Reviews:review._id}},
-        {new:true}
-    )
+      user._id,
+      { $pull: { Reviews: review._id } },
+      { new: true }
+    );
 
-    if(!removed){
-        return res.json({
+    if (!removed) {
+      return res.json({
         success: false,
         message: "Something went wrong.",
       });
     }
-    return res.json({Success:true,message:"Review is removed."})
+    return res.json({ Success: true, message: "Review is removed." });
   } catch (error) {
     return res.json({ success: false, message: error.message });
   }

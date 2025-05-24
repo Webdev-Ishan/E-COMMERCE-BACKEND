@@ -29,7 +29,7 @@ const productSchema = new mongoose.Schema({
   },
   creator: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
+    ref: "Merchant",
   },
   created_at: {
     type: Date,
