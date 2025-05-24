@@ -9,7 +9,11 @@ import productRoutes from "./Routes/product.Routes.js";
 import cartRoutes from "./Routes/cart.Routes.js";
 import orderRoutes from "./Routes/order.Routes.js";
 import reviewRoutes from "./Routes/review.Routes.js";
+import googleauthRoutes from "./Routes/googleauth.Routes.js";
 import cloudConfig from "./Config/cloudinary.js";
+import passport from "passport";
+import expressSession from 'express-session'
+import "./Config/passport.js";
 
 const port = process.env.PORT || 3000;
 
@@ -27,12 +31,21 @@ app.use(
   })
 );
 app.use(cookieParser());
+app.use(expressSession({
+  secret:process.env.EXPRESS_SECRET,
+  resave:false,
+  saveUninitialized:false
+}))
+app.use(passport.initialize())
+app.use(passport.session())
+
 
 app.use("/api/auth", authRoutes);
+app.use("/api/googleauth", googleauthRoutes);
 app.use("/api/product", productRoutes);
 app.use("/api/cart", cartRoutes);
 app.use("/api/order", orderRoutes);
-app.use("/api/review",reviewRoutes)
+app.use("/api/review", reviewRoutes);
 app.listen(port, () => {
   console.log(`Server is running on ${port}`);
 });

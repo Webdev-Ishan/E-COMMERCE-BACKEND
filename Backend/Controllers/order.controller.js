@@ -13,9 +13,9 @@ export const makeorder = async (req, res) => {
     });
   }
 
-  const { status, totalAmount, paymentStatus, created_at } = req.body;
+  const { status, totalAmount, paymentStatus, created_at,address } = req.body;
 
-  if (!status || !totalAmount || !paymentStatus || !created_at) {
+  if (!status || !totalAmount || !paymentStatus || !created_at || !address) {
     return res.json({
       success: false,
       message: "All credentials are required.",
@@ -48,6 +48,7 @@ export const makeorder = async (req, res) => {
       status: status,
       paymentStatus: paymentStatus,
       created_at: created_at,
+      address:address
     });
 
     await order.save();

@@ -20,10 +20,9 @@ export const register = async (req, res) => {
     });
   }
 
-  const { name, email, password, bio, profilePicture, address, created_at } =
-    req.body;
+  const { name, email, password, bio, profilePicture, created_at } = req.body;
 
-  if (!name || !email | !password || !address || !created_at) {
+  if (!name || !email | !password || !created_at) {
     return res.json({
       success: false,
       message: "Fill all the credentials please!",
@@ -53,7 +52,6 @@ export const register = async (req, res) => {
       bio: bio,
 
       created_at: created_at,
-      address: address,
     });
 
     await user.save();
@@ -183,12 +181,11 @@ export const update = async (req, res) => {
     password,
     bio,
     profilePicture,
-    address,
 
     created_at,
   } = req.body;
 
-  if (!name || !email | !password || !address || !created_at) {
+  if (!name || !email | !password || !created_at) {
     return res.json({
       success: false,
       message: "Fill all the credentials please!",
@@ -217,7 +214,6 @@ export const update = async (req, res) => {
     existuser.bio = bio;
 
     existuser.created_at = created_at;
-    existuser.address = address;
 
     await existuser.save();
 

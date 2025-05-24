@@ -16,11 +16,9 @@ const userSchema = new mongoose.Schema({
   },
   password: {
     type: String,
-    required: true,
   },
-  address: {
+  googleId: {
     type: String,
-    required: true,
   },
   profilePicture: {
     type: String,
@@ -79,13 +77,14 @@ export const validateUser = (data) => {
       "any.required": "Email is required",
     }),
 
-    password: Joi.string().min(8).max(128).required().messages({
+    password: Joi.string().min(8).max(128).messages({
       "string.min": "Password must be at least 8 characters",
       "string.max": "Password must be at most 128 characters",
       "string.pattern":
         "Password must contain at least one lowercase letter, uppercase letter, number and special character",
       "any.required": "Password is required",
     }),
+    googleId: Joi.string().min(8).max(128),
 
     bio: Joi.string().allow("").max(500).messages({
       "string.max": "Bio must be at most 500 characters",

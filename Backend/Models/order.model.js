@@ -25,6 +25,10 @@ const orderSchema = new mongoose.Schema({
     default: "Pending",
     enum: ["Pending", "Paid"],
   },
+  address:{
+   type:String,
+   required:true,
+  },
   created_at: {
     type: Date,
   },
