@@ -12,7 +12,7 @@ import reviewRoutes from "./Routes/review.Routes.js";
 import googleauthRoutes from "./Routes/googleauth.Routes.js";
 import cloudConfig from "./Config/cloudinary.js";
 import passport from "passport";
-import expressSession from 'express-session'
+import expressSession from "express-session";
 import "./Config/passport.js";
 
 const port = process.env.PORT || 3000;
@@ -26,19 +26,26 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(
   cors({
-    origin: "http://localhost:5173", // Replace with your frontend URL
+    origin: "http://localhost:3000", // Replace with your frontend URL
     credentials: true,
   })
 );
 app.use(cookieParser());
-app.use(expressSession({
-  secret:process.env.EXPRESS_SECRET,
-  resave:false,
-  saveUninitialized:false
-}))
-app.use(passport.initialize())
-app.use(passport.session())
-
+app.use(
+  expressSession({
+    secret: process.env.EXPRESS_SECRET,
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      httpOnly: true,
+      secure: true, // Use true in production (HTTPS)
+      sameSite: "None", // Allow cross-origin requests
+      maxAge: 24 * 60 * 60 * 1000,
+    },
+  })
+);
+app.use(passport.initialize());
+app.use(passport.session());
 
 app.use("/api/auth", authRoutes);
 app.use("/api/googleauth", googleauthRoutes);

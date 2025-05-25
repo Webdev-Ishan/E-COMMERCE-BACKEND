@@ -14,5 +14,9 @@ authRouter.post("/loginMerchant", authController.loginMerch);
 authRouter.get("/profileMerchant", authUser, authController.profileMerchant);
 authRouter.put("/updateMerchant",authUser,authController.updateMerchant);
 authRouter.post("/logoutMerchant", authController.logoutMerchant);
+authRouter.get('/success', (req, res) => {
+  console.log("Cookies received:", req.cookies.token);
+  res.send("Google login successful!");
+});
 
 export default authRouter;

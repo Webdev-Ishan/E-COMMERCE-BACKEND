@@ -6,7 +6,7 @@ import transporter from "../Config/nodemailer.config.js";
 export const makeorder = async (req, res) => {
   const { id } = req.params;
 
-  if (!req.creator || !id) {
+  if (!req.user.id || !id) {
     return res.json({
       success: false,
       message: "id of the product and user is required.",
@@ -23,7 +23,7 @@ export const makeorder = async (req, res) => {
   }
 
   try {
-    let user = await User.findById(req.creator);
+    let user = await User.findById(req.user.id);
 
     if (!user) {
       return res.json({
@@ -42,7 +42,7 @@ export const makeorder = async (req, res) => {
     }
 
     let order = new orderModel({
-      user: req.creator,
+      user: req.user.id,
       product: id,
       totalAmount: totalAmount,
       status: status,
@@ -61,7 +61,7 @@ export const makeorder = async (req, res) => {
     }
 
     await User.findByIdAndUpdate(
-      req.creator,
+      req.user.id,
       { $push: { orders: order._id } },
       { new: true }
     );
