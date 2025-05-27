@@ -10,6 +10,7 @@ import cartRoutes from "./Routes/cart.Routes.js";
 import orderRoutes from "./Routes/order.Routes.js";
 import reviewRoutes from "./Routes/review.Routes.js";
 import googleauthRoutes from "./Routes/googleauth.Routes.js";
+import paymentRoutes from "./Routes/Payment.Routes.js";
 import cloudConfig from "./Config/cloudinary.js";
 import passport from "passport";
 import expressSession from "express-session";
@@ -53,6 +54,7 @@ app.use("/api/product", productRoutes);
 app.use("/api/cart", cartRoutes);
 app.use("/api/order", orderRoutes);
 app.use("/api/review", reviewRoutes);
+app.use("/api/payment", paymentRoutes);
 app.listen(port, () => {
   console.log(`Server is running on ${port}`);
 });
